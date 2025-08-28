@@ -2470,11 +2470,11 @@ async function handleLogin(e) {
     const alertsList = document.getElementById('alertsList');
     const alertBadge = document.getElementById('alertBadge');
     const today = new Date();
-    const warningDays = 30;
+    const warningDays = 60;
 
     const alerts = assets.filter(asset => {
         let alertByNoteOrRisk =
-            (asset.notes && (asset.notes.includes('หมดอายุ') || asset.notes.includes('> 7 ปี'))) ||
+            (asset.notes && (asset.notes.includes('หมดอายุ') || asset.notes.includes('> 5 ปี'))) ||
             asset.risk === 'สูง';
 
         let alertByExpiry = false;
@@ -2510,7 +2510,7 @@ async function handleLogin(e) {
                     message = "หมดอายุแล้ว";
                 } else if (diffDays <= warningDays) {
                     type = "expiring";
-                    message = `ใกล้หมดอายุใน <span class="expiring-days" data-expiry="${expiryDate.getTime()}">${diffDays}</span> วัน`;
+                    message = `ใกล้หมดอายุอีก <span class="expiring-days" data-expiry="${expiryDate.getTime()}">${diffDays}</span> วัน`;
 
                 }
             }
@@ -3258,11 +3258,11 @@ setInterval(updateExpiringDays, 60 * 60 * 1000); // ทุก 1 ชั่วโ�
                 <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-red-100 text-red-800 border border-red-200 shadow-sm">
                     ❌ หมดอายุแล้ว
                 </span>`;
-            } else if (diffDays <= 30) {
+            } else if (diffDays <= 60) {
     return `
-    <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300 shadow-sm">
-        ⏳ ใกล้หมดอายุใน <span class="expiring-days" data-expiry="${expiryDate.getTime()}">${diffDays}</span> วัน
-    </span>`;
+                <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300 shadow-sm">
+                    ⏳ ใกล้หมดอายุอีก&nbsp;<span class="expiring-days" data-expiry="${expiryDate.getTime()}"> ${diffDays} </span>&nbsp;วัน
+                </span>`;
 }
         }
         return '';
