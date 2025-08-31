@@ -102,8 +102,21 @@
                     <h1 class="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-lg mb-2">
                         IT Asset Inventory
                     </h1>
-                    <p class="text-slate-300">ระบบจัดการทรัพย์สินสารสนเทศ</p>
-                    <p id="dbStatus" class="mt-2 text-xs text-yellow-600">กำลังตรวจสอบการเชื่อมต่อ...</p>
+                    
+                    <div class="space-y-2">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1.5 bg-white/10 rounded-full border border-white/20">
+                            <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                            <p class="text-gray-300 text-xs sm:text-sm font-medium">ระบบจัดการทรัพย์สินสารสนเทศ</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-center space-x-2 text-gray-400 text-xs">
+                            <!--<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>-->
+                            <span>โรงพยาบาลท่ากระดาน</span>
+                        </div>
+                    </div>
+                    <p id="dbStatus" class="mt-2 text-xs text-yellow-600 text-center">กำลังตรวจสอบการเชื่อมต่อ...</p>
                 </div>
                 
                 <!-- Login Form -->
@@ -167,9 +180,17 @@
                         <svg class="w-4 h-4 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                         </svg>
-                        <span>ระบบปลอดภัยด้วยการยืนยันตัวตน</span>
+                        <span>ระบบความปลอดภัยด้วยการยืนยันตัวตน</span>
                     </div>
                 </div>
+                <!-- Version Info -->
+                    <div class="mt-3 text-xs text-gray-500">
+                        <div class="flex items-center justify-center space-x-2">
+                            <!--<span>Version 1.0</span>
+                            <div class="w-0.5 h-0.5 bg-gray-500 rounded-full"></div>-->
+                            <span>กลุ่มงานดิจิทัลทางการแพทย์</span>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -1288,22 +1309,6 @@
         let assets = [];
         let editingAssetId = null;
 
-        // User credentials
-        const users = {
-            'admin': {
-                password: 'ittkd11281',
-                role: 'admin',
-                displayName: 'Admin',
-                displayRole: 'ผู้ดูแลระบบ'
-            },
-            'tkd': {
-                password: 'tkd',
-                role: 'user',
-                displayName: 'User',
-                displayRole: 'ผู้ใช้งาน'
-            }
-        };
-
         // Empty sample data - system starts with clean database
         const sampleAssets = [];
 
@@ -1624,8 +1629,8 @@
             dbStatus.className = isSupabaseConnected ? 'mt-2 text-xs text-green-600' : 'mt-2 text-xs text-yellow-600';
         }
 
-        // Load assets from Supabase
-        async function loadAssetsFromSupabase() {
+    // Load assets from Supabase
+async function loadAssetsFromSupabase() {
     if (!isSupabaseConnected) return;
     
     try {
@@ -1639,9 +1644,6 @@
         
         assets = data || [];
         
-        // ✅ เรียกฟังก์ชันแจ้งเตือนวันหมดอายุ
-        showExpiryAlerts(assets);
-
         // Update all sections with loaded data
         updateAllSections();
         
@@ -1652,7 +1654,6 @@
         showLoading(false);
     }
 }
-
 
         // Save asset to Supabase
         async function saveAssetToSupabase(assetData, isEdit = false) {
@@ -1925,37 +1926,54 @@
             }
         }
 
-        // Authentication functions
-function login(username, password) {
-    const user = users[username];
-    if (user && user.password === password) {
-        currentUser = username;
-        userRole = user.role;
-        
-        // Store session
-        sessionStorage.setItem('currentUser', username);
-        sessionStorage.setItem('userRole', user.role);
-        
-        // Update UI
+// Authentication functions (Supabase version)
+async function login(username, password) {
+    try {
+        if (!supabase) {
+            await initSupabase();
+        }
+
+        // 🔍 ค้นหาผู้ใช้จาก Supabase
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('id, username, password, role, display_name')
+            .eq('username', username)
+            .eq('password', password)   // ⚠️ plain-text ตามที่ตกลง
+            .maybeSingle();
+
+        if (error || !user) {
+            return false;
+        }
+
+        // ✅ ตั้งค่าผู้ใช้ในระบบ
+        currentUser = user.username;
+        userRole    = user.role;
+
+        // เก็บข้อมูลลง sessionStorage
+        sessionStorage.setItem('currentUser', currentUser);
+        sessionStorage.setItem('userRole', userRole);
+        sessionStorage.setItem('displayName', user.display_name || currentUser);
+        sessionStorage.setItem('displayRole', user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้ใช้งาน');
+
+        // อัปเดต UI ตามบทบาท
         updateUserInterface();
-        
-        // 👇 เรียกฟังก์ชันควบคุมเมนูตาม role
         updateMenuByRole(userRole);
 
-        // Show main app
+        // เปิดหน้า Main App
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('mainApp').classList.remove('hidden');
-        
-        // Initialize app
+
+        // โหลดข้อมูลและ sync
         setTimeout(() => {
             updateAllSections();
             setupRealTimeSync();
         }, 100);
-        
-        //showNotification(`เข้าสู่ระบบสำเร็จ - ยินดีต้อนรับ ${user.displayName}`, 'success');
+
         return true;
+    } catch (err) {
+        console.error("Login error:", err);
+        return false;
     }
-    return false;
 }
 
 
@@ -1965,71 +1983,87 @@ function login(username, password) {
         window.assetsSubscription.unsubscribe();
         window.assetsSubscription = null;
     }
-    
-    // Clear session
+
+    // Clear all session data
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('userRole');
-    
+    sessionStorage.removeItem('displayName');
+    sessionStorage.removeItem('displayRole');
+
     // Reset variables
     currentUser = null;
     userRole = null;
     assets = [];
-    
+
     // Show login screen
     document.getElementById('mainApp').classList.add('hidden');
     document.getElementById('loginScreen').classList.remove('hidden');
-    
+
     // Reset form
     document.getElementById('loginForm').reset();
     document.getElementById('loginError').classList.add('hidden');
-    
-    // 🔹 Reset login button state
+
+    // Reset login button state
     const loginBtn = document.getElementById('loginBtn');
     if (loginBtn) {
         loginBtn.disabled = false;
         loginBtn.innerHTML = 'เข้าสู่ระบบ';
     }
-    
+
     // Reset sync status
     const syncStatus = document.getElementById('syncStatus');
     if (syncStatus) {
         syncStatus.classList.add('hidden');
     }
-    
+
     showNotification('ออกจากระบบเรียบร้อย', 'success');
 }
 
 
-        function checkSession() {
-            const savedUser = sessionStorage.getItem('currentUser');
-            const savedRole = sessionStorage.getItem('userRole');
-            
-            if (savedUser && savedRole && users[savedUser]) {
-                currentUser = savedUser;
-                userRole = savedRole;
-                updateUserInterface();
-                return true;
-            }
-            return false;
-        }
+
+    function checkSession() {
+    const savedUser = sessionStorage.getItem('currentUser');
+    const savedRole = sessionStorage.getItem('userRole');
+    const displayName = sessionStorage.getItem('displayName');
+    const displayRole = sessionStorage.getItem('displayRole');
+
+    if (savedUser && savedRole) {
+        currentUser = savedUser;
+        userRole = savedRole;
+
+        // ✅ อัปเดต UI และสิทธิ์ทันที
+        updateUserInterface();
+        updateRoleBasedAccess();
+        updateMenuByRole(userRole);  // 🔹 เรียกตรงนี้ทุกครั้ง
+
+        return true;
+    }
+    return false;
+}
+
+
 
         function updateUserInterface() {
-            if (!currentUser || !users[currentUser]) return;
-            
-            const user = users[currentUser];
-            
-            // Update header
-            document.getElementById('currentUserName').textContent = user.displayName;
-            document.getElementById('currentUserRole').textContent = user.displayRole;
-            document.getElementById('headerUsername').textContent = currentUser;
-            
-            // Update dropdown
-            document.getElementById('dropdownUserName').textContent = user.displayName;
-            document.getElementById('dropdownUserRole').textContent = user.displayRole;
-            
-            // Show/hide elements based on role
-            updateRoleBasedAccess();
-        }
+    if (!currentUser) return;
+
+    const displayName = sessionStorage.getItem('displayName') || currentUser;
+    const displayRole = sessionStorage.getItem('displayRole') || 
+                        (userRole === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้ใช้งาน');
+
+    // Update header
+    document.getElementById('currentUserName').textContent = displayName;
+    document.getElementById('currentUserRole').textContent = displayRole;
+    document.getElementById('headerUsername').textContent = currentUser;
+
+    // Update dropdown
+    document.getElementById('dropdownUserName').textContent = displayName;
+    document.getElementById('dropdownUserRole').textContent = displayRole;
+
+    // ✅ เรียกอัปเดตสิทธิ์ด้วย
+    updateRoleBasedAccess();
+}
+
+
 
         function updateRoleBasedAccess() {
             const isAdmin = userRole === 'admin';
@@ -2252,7 +2286,7 @@ function login(username, password) {
 
 
 
-        // Handle login form submission
+// Handle login form submission
 async function handleLogin(e) {
     e.preventDefault();
     
@@ -2261,10 +2295,10 @@ async function handleLogin(e) {
     const loginBtn = document.getElementById('loginBtn');
     const loginError = document.getElementById('loginError');
     
-    // Hide previous error
+    // ซ่อน error เดิม
     loginError.classList.add('hidden');
     
-    // Show loading state
+    // แสดงสถานะโหลด
     const originalText = loginBtn.innerHTML;
     loginBtn.innerHTML = `
         <div class="relative z-10 flex items-center justify-center space-x-2">
@@ -2274,53 +2308,43 @@ async function handleLogin(e) {
     `;
     loginBtn.disabled = true;
     
-    // Simulate loading delay
-    setTimeout(async () => {
-        if (login(username, password)) {
-            try {
-                // ✅ พยายามโหลดจาก Supabase ก่อน
-                if (isSupabaseConnected) {
-                    try {
-                        await loadAssetsFromSupabase();
-                        showNotification("โหลดข้อมูลจาก Supabase สำเร็จ", "success");
-                    } catch (err) {
-                        console.warn("Supabase load failed, fallback to localStorage:", err);
-                        loadFromLocalStorage();
-                        showNotification("เชื่อมต่อ Supabase ไม่ได้ → โหลดข้อมูลจาก localStorage", "warning");
-                    }
-                } else {
+    try {
+        const success = await login(username, password);  // ✅ ใช้ await
+        
+        if (success) {
+            // ✅ พยายามโหลดจาก Supabase ก่อน
+            if (isSupabaseConnected) {
+                try {
+                    await loadAssetsFromSupabase();
+                    showNotification("โหลดข้อมูลจาก Supabase สำเร็จ", "success");
+                } catch (err) {
+                    console.warn("Supabase load failed, fallback to localStorage:", err);
                     loadFromLocalStorage();
-                    showNotification("โหลดข้อมูลจาก localStorage", "info");
+                    showNotification("เชื่อมต่อ Supabase ไม่ได้ → โหลดข้อมูลจาก localStorage", "warning");
                 }
-
-                // ✅ อัปเดต Dashboard + sync
-                updateAllSections();
-                setupRealTimeSync();
-
-            } catch (err) {
-                console.error("Login data load error:", err);
-                showNotification("เกิดข้อผิดพลาดในการโหลดข้อมูล", "error");
-            } finally {
-                // Reset ปุ่ม
-                loginBtn.innerHTML = originalText;
-                loginBtn.disabled = false;
+            } else {
+                loadFromLocalStorage();
+                showNotification("โหลดข้อมูลจาก localStorage", "info");
             }
 
+            // ✅ อัปเดต Dashboard + sync
+            updateAllSections();
+            setupRealTimeSync();
+
         } else {
-            // ❌ Show error
+            // ❌ Login ล้มเหลว
             loginError.classList.remove('hidden');
-            
-            // Reset button
-            loginBtn.innerHTML = originalText;
-            loginBtn.disabled = false;
-            
-            // Clear password field
             document.getElementById('password').value = '';
         }
-    }, 300);
+    } catch (err) {
+        console.error("Login process error:", err);
+        showNotification("เกิดข้อผิดพลาดในการเข้าสู่ระบบ", "error");
+    } finally {
+        // รีเซ็ตปุ่ม
+        loginBtn.innerHTML = originalText;
+        loginBtn.disabled = false;
+    }
 }
-
-
 
         // Sync data
         async function handleSync() {
@@ -2390,7 +2414,7 @@ async function handleLogin(e) {
         }
 
         // Dashboard
-        function updateDashboard() {
+    function updateDashboard() {
     const stats = {
         hardware: assets.filter(a => a.type === 'Hardware').length,
         software: assets.filter(a => a.type === 'Software').length,
@@ -4315,21 +4339,21 @@ document.addEventListener("DOMContentLoaded", () => {
         lifespanInput.addEventListener("input", updateExpiry);
     }
 });
+
 function updateMenuByRole(role) {
     const menuAssets = document.getElementById('menuAssets');
     const menuReports = document.getElementById('menuReports');
 
-    if (role === 'user') {
-        // user เห็นแค่ Dashboard
-        if (menuAssets) menuAssets.style.display = 'none';
-        if (menuReports) menuReports.style.display = 'none';
-    } else if (role === 'admin') {
-        // admin เห็นทุกเมนู
+    // 🔹 รีเซ็ตเป็นซ่อนก่อนทุกครั้ง
+    if (menuAssets) menuAssets.style.display = 'none';
+    if (menuReports) menuReports.style.display = 'none';
+
+    // 🔹 แสดงเฉพาะ admin
+    if (role === 'admin') {
         if (menuAssets) menuAssets.style.display = 'block';
         if (menuReports) menuReports.style.display = 'block';
     }
 }
-
 
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'970f4a4e93067329',t:'MTc1NTQ5Nzg2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
