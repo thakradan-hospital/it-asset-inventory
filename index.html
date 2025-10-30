@@ -2570,243 +2570,270 @@
     <!-- Asset Modal -->
     <div
       id="assetModal"
-      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-screen overflow-y-auto"
+        class="bg-white rounded-xl shadow-2xl w-full max-w-[90%] md:max-w-xl lg:max-w-3xl flex flex-col max-h-[90vh]"
       >
-        <div class="p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h3 id="modalTitle" class="text-xl font-bold text-gray-800">
-              เพิ่มทรัพย์สิน
-            </h3>
-            <button id="closeModal" class="text-gray-400 hover:text-gray-600">
-              <span class="text-2xl">×</span>
-            </button>
-          </div>
+        <div
+          class="bg-blue-50/50 backdrop-blur-sm border-b border-gray-200 px-6 py-4 flex justify-between items-center flex-shrink-0 rounded-t-xl"
+        >
+          <h3
+            id="modalTitle"
+            class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6 text-blue-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            เพิ่มครุภัณฑ์
+          </h3>
+          <button
+            type="button"
+            id="closeModal"
+            class="text-gray-500 hover:text-gray-700 transition-all duration-200 p-1 rounded-full hover:bg-white"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
 
-          <form id="assetForm" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex-grow p-6 overflow-y-auto">
+          <form id="assetForm" class="space-y-6">
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4"
+            >
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >ประเภทครุภัณฑ์ *</label
                 >
                 <select
                   id="assetType"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition shadow-sm"
                 >
                   <option value="">เลือกประเภท</option>
-                  <option value="Hardware">Hardware</option>
-                  <option value="Software">Software</option>
-                  <option value="Network">Network</option>
-                  <option value="People/Data/Docs">People/Data/Docs</option>
+                  <option>Hardware</option>
+                  <option>Software</option>
+                  <option>Network</option>
+                  <option>People/Data/Docs</option>
                 </select>
               </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >รายการครุภัณฑ์ *</label
                 >
                 <input
                   type="text"
                   id="assetName"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="เช่น Server HOSxP"
                   required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition shadow-sm"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >ความสำคัญ *</label
                 >
                 <select
                   id="assetCritical"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 >
                   <option value="">เลือกความสำคัญ</option>
-                  <option value="สำคัญ">สำคัญ</option>
-                  <option value="ไม่สำคัญ">ไม่สำคัญ</option>
+                  <option>สำคัญ</option>
+                  <option>ไม่สำคัญ</option>
                 </select>
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >ความเสี่ยง *</label
                 >
                 <select
                   id="assetRisk"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 >
                   <option value="">เลือกความเสี่ยง</option>
-                  <option value="สูง">สูง</option>
-                  <option value="กลาง">กลาง</option>
-                  <option value="ต่ำ">ต่ำ</option>
+                  <option>สูง</option>
+                  <option>กลาง</option>
+                  <option>ต่ำ</option>
                 </select>
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >สถานะ *</label
                 >
                 <select
                   id="assetStatus"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 >
                   <option value="">เลือกสถานะ</option>
-                  <option value="ใช้งาน">ใช้งาน</option>
-                  <option value="สำรอง">สำรอง</option>
-                  <option value="ชำรุด">ชำรุด</option>
-                  <option value="ส่งซ่อม">ส่งซ่อม</option>
-                  <option value="ไม่ใช้งาน">ไม่ใช้งาน</option>
+                  <option>ใช้งาน</option>
+                  <option>สำรอง</option>
+                  <option>ชำรุด</option>
+                  <option>ส่งซ่อม</option>
+                  <option>ไม่ใช้งาน</option>
                 </select>
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >วันที่จัดซื้อ</label
                 >
                 <input
                   type="date"
                   id="assetPurchaseDate"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 />
               </div>
-
-              <!-- ช่องใหม่: อายุการใช้งาน -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >อายุการใช้งาน (ปี)</label
-                >
-                <input
-                  type="number"
-                  id="assetLifespan"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="เช่น 5"
-                  min="1"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >วันที่หมดอายุ</label
                 >
                 <input
                   type="date"
                   id="assetExpiryDate"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   readonly
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed shadow-sm"
                 />
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >วันที่ติดตั้ง</label
                 >
                 <input
                   type="date"
                   id="assetInstallDate"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 />
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >อายุการใช้งาน (ปี)</label
+                >
+                <input
+                  type="number"
+                  id="assetLifespan"
+                  placeholder="เช่น 5"
+                  min="1"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >ปีงบประมาณ</label
                 >
                 <input
                   type="number"
                   id="assetBudgetYear"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="เช่น 2567"
                   min="2500"
                   max="2600"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 />
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >หมายเลขทะเบียนครุภัณฑ์</label
                 >
                 <input
                   type="text"
                   id="assetRegistrationNumber"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="เช่น ทด 0000-000-0000-00/00"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 />
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >ผู้รับผิดชอบ *</label
                 >
                 <input
                   type="text"
                   id="assetOwner"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="ชื่อผู้รับผิดชอบ"
                   required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 />
               </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
+              <div class="lg:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1"
                   >สถานที่ตั้ง</label
                 >
                 <input
                   type="text"
                   id="assetLocation"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="เช่น ห้อง Server"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
                 />
               </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >ข้อมูลจำเพาะ</label
-              >
-              <textarea
-                id="assetSpecifications"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                rows="3"
-                placeholder="เช่น CPU: Intel i7, RAM: 16GB, Storage: 1TB SSD"
-              ></textarea>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >หมายเหตุ</label
-              >
-              <textarea
-                id="assetNotes"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                rows="3"
-                placeholder="ระบุหมายเหตุ"
-              ></textarea>
-            </div>
-
-            <div class="flex justify-end space-x-4 pt-4">
-              <button
-                type="button"
-                id="cancelBtn"
-                class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200"
-              >
-                ยกเลิก
-              </button>
-              <button
-                type="submit"
-                id="submitBtn"
-                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
-              >
-                บันทึก
-              </button>
+              <div class="lg:col-span-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >ข้อมูลจำเพาะ</label
+                >
+                <textarea
+                  id="assetSpecifications"
+                  rows="2"
+                  placeholder="เช่น CPU: Intel i7, RAM: 16GB, Storage: 1TB SSD"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
+                ></textarea>
+              </div>
+              <div class="lg:col-span-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >หมายเหตุ</label
+                >
+                <textarea
+                  id="assetNotes"
+                  rows="2"
+                  placeholder="ระบุหมายเหตุเพิ่มเติม"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 shadow-sm"
+                ></textarea>
+              </div>
             </div>
           </form>
+        </div>
+
+        <div
+          class="bg-blue-50 px-6 py-4 flex justify-end space-x-4 border-t border-blue-100 rounded-b-xl flex-shrink-0"
+        >
+          <button
+            type="button"
+            id="cancelBtn"
+            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition duration-200"
+          >
+            ยกเลิก
+          </button>
+          <button
+            type="submit"
+            form="assetForm"
+            id="submitBtn"
+            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 shadow-md"
+          >
+            บันทึก
+          </button>
         </div>
       </div>
     </div>
@@ -6350,4 +6377,3 @@
     </script>
   </body>
 </html>
-
