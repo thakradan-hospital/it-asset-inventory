@@ -1,0 +1,22 @@
+{
+  "name": "ระบบจัดการทรัพย์สินสารสนเทศ",
+  "short_name": "IT Asset",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "asset2.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "asset3.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
+
